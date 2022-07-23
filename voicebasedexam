@@ -1,0 +1,107 @@
+import speech_recognition as sr
+import pyttsx3
+import pywhatkit
+import datetime
+import wikipedia
+import pyjokes
+from selenium import webdriver
+listener = sr.Recognizer()
+engine = pyttsx3.init()
+voices = engine.getProperty('voices')
+engine.setProperty('voice', voices[1].id)
+
+
+def talk(text):
+    engine.say(text)
+    engine.runAndWait()
+def take_ans():
+    try:
+        with sr.Microphone() as source:
+           
+            print('answer now...')
+            voice = listener.listen(source)
+            command = listener.recognize_google(voice)
+            command = command.lower()
+            #print(command)
+            if 'alexa' in command:
+                command = command.replace('alexa', '')
+                print(command)
+    except:
+        pass
+    return command
+
+def take_command():
+    try:
+        with sr.Microphone() as source:
+            talk("I am your Assistant")
+            talk("Alexa")
+            print('listening...')
+            voice = listener.listen(source)
+            command = listener.recognize_google(voice)
+            command = command.lower()
+            #print(command)
+            if 'alexa' in command:
+                command = command.replace('alexa', '')
+                print(command)
+    except:
+        pass
+    return command
+
+
+def run_alexa():
+    count=0
+    command =   take_command()
+
+    print(command)
+    if 'play' in command:
+        song = command.replace('play', '')
+        talk('playing ' + song)
+        pywhatkit.playonyt(song)
+    elif 'exam' in command:
+        talk("Which of the following is not introduced with Java 8? ")
+        talk("1.Stream API")
+        talk("2.Serialization")
+        talk("3.Spliterator")
+        talk("4.Lambda Expression")
+        command1 =   take_ans()
+        if '1' in command1:
+            count=count+1
+            print(count)
+        talk("Which of the following is not a state of object in Hibernate ")
+        talk("1.Attached()")
+        talk("2.Detached()")
+        talk("3.Persistent()")
+        talk("4.Transient()")
+        command11 =   take_ans()
+        if '2' in command11:
+            count=count+1
+            print(count) 
+        
+    elif 'about' in command:
+        topic = command.replace('about', '')
+        #topic =input("Enter topic")
+        topic=topic.replace(' ','+')
+        browser =webdriver.Chrome('chromedriver')
+        for i in range(1):
+            ele=browser.get("https://www.google.com/search?q="+topic+"&start"+str(i))           
+    elif 'time' in command:
+        time = datetime.datetime.now().strftime('%I:%M %p')
+        talk('Current time is ' + time)
+    elif 'tell about' in command:
+        person = command.replace('I am telling about', '')
+        info = wikipedia.summary(person, 1)
+        print(info)
+        talk(info)
+    elif 'date' in command:
+        talk('sorry, I have a headache')
+    elif 'are you single' in command:
+        talk('I am in a relationship with wifi')
+    elif 'joke' in command:
+        ab= talk(pyjokes.get_joke())
+        print(ab)     
+    else:
+        talk('Please say the command again.')
+
+
+while True:
+    run_alexa()
